@@ -33,7 +33,6 @@ jobs:
         host: [ arm64-v8a, x86_64 ]
 
     steps:
-
       - name: Fetch Source
         run: |
           git clone https://${{ secrets.GIT_TOKEN }}@github.com/rhn-1k/qube-source.git
@@ -118,30 +117,21 @@ jobs:
         run: |
           wget -q https://download.gnome.org/sources/glib/2.90/glib-${{ env.GLIB_VERSION }}.tar.xz
           wget -q https://github.com/libffi/libffi/releases/download/v${{ env.LIBFFI_VERSION }}/libffi-${{ env.LIBFFI_VERSION }}.tar.gz
-          wget -q https://gitlab.freedesktop.org/pixman/pixman/-/archive/pixman-${{ env.PIXMAN_VERSION }}/pixman-pixman-${{ env.PIXMAN_VERSION }}.tar.gz
+          wget -q https://gitlab.freedesktop.org/pixman/pixman/-/archive/pixman-${{ env.PIXMAN_VERSION }}/pixman-pixman-${{ env.PIXMAN_VERSION }}.tar.gz -O pixman-${{ env.PIXMAN_VERSION }}.tar.gz
           wget -q https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v${{ env.LIBSLIRP_VERSION }}/libslirp-v${{ env.LIBSLIRP_VERSION }}.zip
           wget -q https://github.com/anholt/libepoxy/archive/refs/tags/${{ env.EPOXY_VERSION }}.zip -O libepoxy-${{ env.EPOXY_VERSION }}.zip
-
-      - name: Clone virglrenderer
-        if: steps.cache-native.outputs.cache-hit != 'true'
-        working-directory: qube-android-lib/src/main/jni
-        run: |
-          git clone https://gitlab.freedesktop.org/virgl/virglrenderer.git virglrenderer
+          wget -q https://gitlab.freedesktop.org/virgl/virglrenderer/-/archive/virglrenderer-${{ env.VIRGLRENDERER_VERSION }}/virglrenderer-virglrenderer-${{ env.VIRGLRENDERER_VERSION }}.tar.gz -O virglrenderer-${{ env.VIRGLRENDERER_VERSION }}.tar.gz
 
       - name: Extract sources into jni
         if: steps.cache-native.outputs.cache-hit != 'true'
         working-directory: qube-android-lib/src/main/jni
         run: |
-          tar -xJf ${{ github.workspace }}/qemu-${{ env.QEMU_VERSION }}.tar.xz \
-            && mv qemu-${{ env.QEMU_VERSION }} qemu
-          tar -xJf ${{ github.workspace }}/glib-${{ env.GLIB_VERSION }}.tar.xz \
-            && mv glib-${{ env.GLIB_VERSION }} glib
-          tar -xzf ${{ github.workspace }}/libffi-${{ env.LIBFFI_VERSION }}.tar.gz \
-            && mv libffi-${{ env.LIBFFI_VERSION }} libffi
-          tar -xzf ${{ github.workspace }}/pixman-pixman-${{ env.PIXMAN_VERSION }}.tar.gz \
-            && mv pixman-pixman-${{ env.PIXMAN_VERSION }} pixman
-          unzip -q ${{ github.workspace }}/libepoxy-${{ env.EPOXY_VERSION }}.zip \
-            && mv libepoxy-${{ env.EPOXY_VERSION }} libepoxy
+          tar -xJf ${{ github.workspace }}/qemu-${{ env.QEMU_VERSION }}.tar.xz && mv qemu-${{ env.QEMU_VERSION }} qemu
+          tar -xJf ${{ github.workspace }}/glib-${{ env.GLIB_VERSION }}.tar.xz && mv glib-${{ env.GLIB_VERSION }} glib
+          tar -xzf ${{ github.workspace }}/libffi-${{ env.LIBFFI_VERSION }}.tar.gz && mv libffi-${{ env.LIBFFI_VERSION }} libffi
+          tar -xzf ${{ github.workspace }}/pixman-${{ env.PIXMAN_VERSION }}.tar.gz && mv pixman-pixman-${{ env.PIXMAN_VERSION }} pixman
+          tar -xzf ${{ github.workspace }}/virglrenderer-${{ env.VIRGLRENDERER_VERSION }}.tar.gz && mv virglrenderer-virglrenderer-${{ env.VIRGLRENDERER_VERSION }} virglrenderer
+          unzip -q ${{ github.workspace }}/libepoxy-${{ env.EPOXY_VERSION }}.zip && mv libepoxy-${{ env.EPOXY_VERSION }} libepoxy
 
       - name: Place libslirp into QEMU subprojects
         if: steps.cache-native.outputs.cache-hit != 'true' && (env.QEMU_VERSION == '7.2.22' || env.QEMU_VERSION == '11.1.3')
