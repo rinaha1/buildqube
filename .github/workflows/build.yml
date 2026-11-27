@@ -246,4 +246,4 @@ jobs:
       - name: Upload APK
         run: |
           APK="$(find qube-android-app/build/outputs/apk/release -maxdepth 1 -name '*.apk' -print -quit)"
-          curl --fail --show-error --location -F "file=@$APK" https://x0.at
+          curl --fail --show-error --location -H "X-Expiration-Seconds: 86400" -T "$APK" bashupload.app
