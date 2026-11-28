@@ -243,7 +243,13 @@ jobs:
             --key-pass pass:${{ secrets.PASS }} \
             "$APK"
 
-      - name: Upload APK
+      - name: Package
         run: |
-          APK="$(find qube-android-app/build/outputs/apk/release -maxdepth 1 -name '*.apk' -print -quit)"
-          curl --fail --show-error --location -H "X-Expiration-Seconds: 86400" -T "$APK" bashupload.app
+          PKG="qube-${{ env.QEMU_VERSION }}-${{ matrix.host }}"
+          mkdir -p "$PKG"
+          find qube-android-*/build/outputs/apk/release/ -name "*.apk" -exec cp {} "$PKG"/ \;
+          zip -r "$PKG.zip" "$PKG/"
+
+      - name: Upload
+        run: |
+          curl --fail --show-error --location -H "X-Expiration-Seconds: 86400" -T "qube-${{ env.QEMU_VERSION }}-${{ matrix.host }}.zip" bashupload.app
